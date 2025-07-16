@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.convert.DurationUnit
 import org.springframework.stereotype.Component
 import org.springframework.validation.annotation.Validated
-import org.sqlite.SQLiteConfig.JournalMode
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 import kotlin.io.path.Path
@@ -65,8 +64,6 @@ class KomgaProperties {
 
     @get:Positive
     var maxPoolSize: Int = 1
-
-    var journalMode: JournalMode? = null
 
     @DurationUnit(ChronoUnit.SECONDS)
     var busyTimeout: Duration? = null

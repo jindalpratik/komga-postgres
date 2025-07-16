@@ -8,6 +8,7 @@ import org.gotson.komga.infrastructure.jooq.selectTempStrings
 import org.gotson.komga.jooq.main.Tables
 import org.gotson.komga.jooq.main.tables.records.ThumbnailBookRecord
 import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -103,18 +104,11 @@ class ThumbnailBookDao(
 
   @Transactional
   override fun markSelected(thumbnail: ThumbnailBook) {
+    // Use a single update statement to avoid deadlocks
     dsl
       .update(tb)
-      .set(tb.SELECTED, false)
+      .set(tb.SELECTED, DSL.`when`(tb.ID.eq(thumbnail.id), true).otherwise(false))
       .where(tb.BOOK_ID.eq(thumbnail.bookId))
-      .and(tb.ID.ne(thumbnail.id))
-      .execute()
-
-    dsl
-      .update(tb)
-      .set(tb.SELECTED, true)
-      .where(tb.BOOK_ID.eq(thumbnail.bookId))
-      .and(tb.ID.eq(thumbnail.id))
       .execute()
   }
 
