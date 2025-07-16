@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgres-main:
+    image: postgres:16-alpine
+    container_name: komga-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      TZ: Asia/Kolkata
+      POSTGRES_DB: komga
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d komga"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - komga-network
+
+networks:
+  komga-network:
+    driver: bridge

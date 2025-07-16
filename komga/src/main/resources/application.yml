@@ -16,18 +16,34 @@ logging:
 
 komga:
   database:
-    file: \${komga.config-dir}/database.sqlite
+    # PostgreSQL settings
+    type: POSTGRES
+    host: localhost
+    port: 5432
+    name: komga
+    username: postgres
+    password: password
+    max-pool-size: 10
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
   lucene:
     data-directory: \${komga.config-dir}/lucene
+
   fonts:
     data-directory: \${komga.config-dir}/fonts
+
   config-dir: \${user.home}/.komga
-  tasks-db:
-    file: \${komga.config-dir}/tasks.sqlite
+
 
 spring:
   codec:
     max-in-memory-size: 10MB
+
   flyway:
     enabled: true
     locations: classpath:db/migration/{vendor}
@@ -37,14 +53,17 @@ spring:
       library-scan-startup: \${komga.libraries-scan-startup:false}
       delete-empty-collections: \${komga.delete-empty-collections:true}
       delete-empty-read-lists: \${komga.delete-empty-read-lists:true}
+
   thymeleaf:
     prefix: classpath:/public/
+
   mvc:
     async:
       request-timeout: 1h
   web:
     resources:
       add-mappings: false
+
   jackson:
     deserialization:
       FAIL_ON_NULL_FOR_PRIMITIVES: true
