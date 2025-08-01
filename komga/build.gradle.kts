@@ -112,7 +112,7 @@ dependencies {
   jooqGenerator("org.postgresql:postgresql:42.7.4")
 
   if (version.toString().endsWith(".0.0")) {
-    ksp("com.github.gotson.bestbefore:bestbefore-processor-kotlin:0.1.0")
+    ksp("com.github.gotson.bestbefore:bestbefore-processor-kotlin:0.2.0")
   }
 
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
