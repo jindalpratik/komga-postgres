@@ -40,6 +40,7 @@ class HistoricalEventDtoDao(
         .map { er ->
           val epr = dsl.selectFrom(ep).where(ep.ID.eq(er.id)).fetch()
           HistoricalEventDto(
+            id = er.id,
             type = er.type,
             timestamp = er.timestamp,
             bookId = er.bookId,
