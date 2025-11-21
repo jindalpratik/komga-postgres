@@ -76,26 +76,6 @@ class ReadListDao(
         .and(b.LIBRARY_ID.inOrNoCondition(filterOnLibraryIds))
         .and(restrictions.toCondition())
 
-    val queryIds =
-      if (belongsToLibraryIds == null && filterOnLibraryIds == null && !restrictions.isRestricted)
-        null
-      else
-        dsl
-          .selectDistinct(rl.ID)
-          .from(rl)
-          .leftJoin(rlb)
-          .on(rl.ID.eq(rlb.READLIST_ID))
-          .leftJoin(b)
-          .on(rlb.BOOK_ID.eq(b.ID))
-          .apply { if (restrictions.isRestricted) leftJoin(sd).on(sd.SERIES_ID.eq(b.SERIES_ID)) }
-          .where(conditions)
-
-    val count =
-      if (queryIds != null)
-        dsl.fetchCount(queryIds)
-      else
-        dsl.fetchCount(rl, searchCondition)
-
     val orderBy =
       pageable.sort.mapNotNull {
         if (it.property == "relevance" && !readListIds.isNullOrEmpty())
@@ -104,13 +84,73 @@ class ReadListDao(
           it.toSortField(sorts)
       }
 
+    // Get the count before pagination
+    val count =
+      if (belongsToLibraryIds == null && filterOnLibraryIds == null && !restrictions.isRestricted) {
+        dsl.fetchCount(rl, searchCondition)
+      } else {
+        dsl.fetchCount(
+          dsl
+            .selectDistinct(rl.ID)
+            .from(rl)
+            .leftJoin(rlb)
+            .on(rl.ID.eq(rlb.READLIST_ID))
+            .leftJoin(b)
+            .on(rlb.BOOK_ID.eq(b.ID))
+            .apply { if (restrictions.isRestricted) leftJoin(sd).on(sd.SERIES_ID.eq(b.SERIES_ID)) }
+            .where(conditions),
+        )
+      }
+
+    // Build the query for distinct readlist IDs
+    // For PostgreSQL compatibility with SELECT DISTINCT + ORDER BY, we need to include order columns in SELECT
+    val paginatedIds =
+      if (belongsToLibraryIds == null && filterOnLibraryIds == null && !restrictions.isRestricted) {
+        // Simple case: no filtering needed, just query readlist table
+        dsl
+          .select(rl.ID)
+          .from(rl)
+          .where(searchCondition)
+          .orderBy(orderBy)
+          .apply { if (pageable.isPaged) limit(pageable.pageSize).offset(pageable.offset) }
+          .fetch()
+          .map { it.value1() }
+      } else {
+        // Complex case: need to join and filter
+        // Use a subquery to get distinct IDs first, then order and paginate
+        val distinctIds =
+          dsl
+            .selectDistinct(rl.ID)
+            .from(rl)
+            .leftJoin(rlb)
+            .on(rl.ID.eq(rlb.READLIST_ID))
+            .leftJoin(b)
+            .on(rlb.BOOK_ID.eq(b.ID))
+            .apply { if (restrictions.isRestricted) leftJoin(sd).on(sd.SERIES_ID.eq(b.SERIES_ID)) }
+            .where(conditions)
+            .asTable("distinct_ids")
+
+        dsl
+          .select(distinctIds.field(rl.ID))
+          .from(distinctIds)
+          .leftJoin(rl)
+          .on(distinctIds.field(rl.ID)?.eq(rl.ID))
+          .orderBy(orderBy)
+          .apply { if (pageable.isPaged) limit(pageable.pageSize).offset(pageable.offset) }
+          .fetch()
+          .map { it.value1() as String }
+      }
+
+    // Fetch full readlist details for the paginated IDs
     val items =
-      selectBase(restrictions.isRestricted)
-        .where(conditions)
-        .apply { if (queryIds != null) and(rl.ID.`in`(queryIds)) }
-        .orderBy(orderBy)
-        .apply { if (pageable.isPaged) limit(pageable.pageSize).offset(pageable.offset) }
-        .fetchAndMap(filterOnLibraryIds, restrictions)
+      if (paginatedIds.isEmpty()) {
+        emptyList()
+      } else {
+        selectBase(restrictions.isRestricted)
+          .where(rl.ID.`in`(paginatedIds))
+          .orderBy(orderBy)
+          .fetchAndMap(filterOnLibraryIds, restrictions)
+      }
 
     val pageSort = if (orderBy.isNotEmpty()) pageable.sort else Sort.unsorted()
     return PageImpl(
