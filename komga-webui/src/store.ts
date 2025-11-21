@@ -6,8 +6,6 @@ import createPersistedState from 'vuex-persistedstate'
 import {persistedModule} from './plugins/persisted-state'
 import {LibraryDto} from '@/types/komga-libraries'
 import {ReadListDto} from '@/types/komga-readlists'
-import {ItemDto, JsonFeedDto} from '@/types/json-feed'
-import {isEmpty} from 'lodash'
 
 Vue.use(Vuex)
 
@@ -57,25 +55,10 @@ export default new Vuex.Store({
 
     booksToCheck: 0,
 
-    announcements: {} as JsonFeedDto,
-
     actuatorInfo: {} as ActuatorInfo,
+  },
+  getters: {},
 
-    releases: [] as ReleaseDto[],
-  },
-  getters: {
-    getUnreadAnnouncementsCount: (state) => (): number => {
-      return state.announcements?.items
-        ?.filter((value: ItemDto) => false == value._komga?.read)
-        ?.length || 0
-    },
-    isLatestVersion: (state) => (): number => {
-      if(isEmpty(state.actuatorInfo)) return -1
-      if(state.releases.length == 0) return -1
-      if(state.actuatorInfo.build.version == state.releases.find((x: ReleaseDto) => x.latest)?.version) return 1
-      else return 0
-    },
-  },
   mutations: {
     // Collections
     setAddToCollectionSeriesIds(state, seriesIds: string[]) {
@@ -171,14 +154,8 @@ export default new Vuex.Store({
     setDeleteSeriesDialog(state, dialog) {
       state.deleteSeriesDialog = dialog
     },
-    setAnnouncements(state, announcements) {
-      state.announcements = announcements
-    },
     setActuatorInfo(state, info) {
       state.actuatorInfo = info
-    },
-    setReleases(state, releases) {
-      state.releases = releases
     },
   },
   actions: {

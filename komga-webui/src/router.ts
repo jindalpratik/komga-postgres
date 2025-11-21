@@ -110,18 +110,6 @@ const router = new Router({
           component: () => import(/* webpackChunkName: "metrics" */ './views/MetricsView.vue'),
         },
         {
-          path: '/settings/announcements',
-          name: 'announcements',
-          beforeEnter: adminGuard,
-          component: () => import(/* webpackChunkName: "announcements" */ './views/AnnouncementsView.vue'),
-        },
-        {
-          path: '/settings/updates',
-          name: 'updates',
-          beforeEnter: adminGuard,
-          component: () => import(/* webpackChunkName: "updates" */ './views/UpdatesView.vue'),
-        },
-        {
           path: '/media-management/analysis',
           name: 'media-analysis',
           beforeEnter: adminGuard,

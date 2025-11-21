@@ -7,8 +7,8 @@
         dot
         offset-x="15"
         offset-y="20"
-        :value="drawerVisible ? 0 : $store.state.booksToCheck + $store.getters.getUnreadAnnouncementsCount()"
-        :color="$store.state.booksToCheck ? 'accent' : 'info'"
+        :value="drawerVisible ? 0 : $store.state.booksToCheck"
+        color="accent"
         class="ms-n3"
       >
         <v-app-bar-nav-icon @click.stop="toggleDrawer"/>
@@ -223,14 +223,7 @@
                         v-model="expandSettings"
           >
             <template v-slot:prependIcon>
-              <v-badge
-                dot
-                inline
-                :value="$store.getters.getUnreadAnnouncementsCount()"
-                color="info"
-              >
-                <v-icon>mdi-cog</v-icon>
-              </v-badge>
+              <v-icon>mdi-cog</v-icon>
             </template>
             <template v-slot:activator>
               <v-list-item-title>{{ $t('server.tab_title') }}</v-list-item-title>
@@ -250,28 +243,6 @@
 
             <v-list-item :to="{name: 'metrics'}">
               <v-list-item-title>{{ $t('metrics.title') }}</v-list-item-title>
-            </v-list-item>
-
-            <v-list-item :to="{name: 'announcements'}">
-              <v-badge
-                dot
-                inline
-                :value="$store.getters.getUnreadAnnouncementsCount()"
-                color="info"
-              >
-                <v-list-item-title>{{ $t('announcements.tab_title') }}</v-list-item-title>
-              </v-badge>
-            </v-list-item>
-
-            <v-list-item :to="{name: 'updates'}">
-              <v-badge
-                dot
-                inline
-                :value="$store.getters.isLatestVersion() == 0"
-                color="warning"
-              >
-                <v-list-item-title>{{ $t('server.updates') }}</v-list-item-title>
-              </v-badge>
             </v-list-item>
           </v-list-group>
 
@@ -349,15 +320,7 @@
         <div v-if="isAdmin && !$_.isEmpty($store.state.actuatorInfo)"
              class="pa-2 pb-6 text-caption"
         >
-          <v-badge
-            dot
-            :value="$store.getters.isLatestVersion() == 0"
-            color="warning"
-          >
-            <router-link :to="{name: 'updates'}" class="link-none">
-              v{{ $store.state.actuatorInfo.build.version }}-{{ $store.state.actuatorInfo.git.branch }}
-            </router-link>
-          </v-badge>
+          v{{ $store.state.actuatorInfo.build.version }}-{{ $store.state.actuatorInfo.git.branch }}
         </div>
       </template>
     </v-navigation-drawer>
@@ -419,10 +382,6 @@ export default Vue.extend({
         ]),
       } as BookSearch, {size: 0} as PageRequest)
         .then(x => this.$store.commit('setBooksToCheck', x.totalElements))
-      this.$komgaAnnouncements.getAnnouncements()
-        .then(x => this.$store.commit('setAnnouncements', x))
-      this.$komgaReleases.getReleases()
-        .then(x => this.$store.commit('setReleases', x))
     }
     this.checkRoute(this.$route)
   },
