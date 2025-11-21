@@ -42,6 +42,19 @@ jobs:
           java-package: 'jdk'
           distribution: 'temurin'
 
+      - name: Setup PostgreSQL 16
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-16 postgresql-contrib-16
+          sudo systemctl start postgresql
+          sudo -u postgres psql -c "CREATE USER komga WITH PASSWORD 'komga_password' SUPERUSER;"
+          sudo -u postgres createdb -O komga komga
+          sudo -u postgres createdb -O komga komga_tasks
+          sudo -u postgres psql -d komga -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+          sudo -u postgres psql -d komga_tasks -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -49,6 +62,9 @@ jobs:
         run: ./gradlew :komga:prepareThymeLeaf :komga:bootJar
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
+          SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:5432/komga"
+          SPRING_DATASOURCE_USERNAME: "komga"
+          SPRING_DATASOURCE_PASSWORD: "komga_password"
 
       - name: Create release notes
         run: |

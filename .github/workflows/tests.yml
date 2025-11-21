@@ -27,11 +27,54 @@ jobs:
           java-package: 'jdk'
           distribution: 'temurin'
 
+      - name: Setup PostgreSQL (Ubuntu)
+        if: contains(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-16 postgresql-contrib-16
+          sudo systemctl start postgresql
+          sudo -u postgres psql -c "CREATE USER komga WITH PASSWORD 'komga_password' SUPERUSER;"
+          sudo -u postgres createdb -O komga komga
+          sudo -u postgres createdb -O komga komga_tasks
+          sudo -u postgres psql -d komga -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+          sudo -u postgres psql -d komga_tasks -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+
+      - name: Setup PostgreSQL (macOS)
+        if: contains(matrix.os, 'macos')
+        run: |
+          brew install postgresql@16
+          brew services start postgresql@16
+          sleep 5
+          /opt/homebrew/opt/postgresql@16/bin/psql postgres -c "CREATE USER komga WITH PASSWORD 'komga_password' SUPERUSER;"
+          /opt/homebrew/opt/postgresql@16/bin/psql postgres -c "CREATE DATABASE komga OWNER komga;"
+          /opt/homebrew/opt/postgresql@16/bin/psql postgres -c "CREATE DATABASE komga_tasks OWNER komga;"
+          /opt/homebrew/opt/postgresql@16/bin/psql -d komga -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+          /opt/homebrew/opt/postgresql@16/bin/psql -d komga_tasks -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+
+      - name: Setup PostgreSQL (Windows)
+        if: contains(matrix.os, 'windows')
+        run: |
+          choco install postgresql16 --params '/Password:postgres'
+          Start-Sleep -Seconds 10
+          $env:PGPASSWORD = "postgres"
+          & "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -c "CREATE USER komga WITH PASSWORD 'komga_password' SUPERUSER;"
+          & "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -c "CREATE DATABASE komga OWNER komga;"
+          & "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -c "CREATE DATABASE komga_tasks OWNER komga;"
+          & "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d komga -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+          & "C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d komga_tasks -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+        shell: pwsh
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build
         run: ./gradlew build :komga-tray:jar
+        env:
+          SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:5432/komga"
+          SPRING_DATASOURCE_USERNAME: "komga"
+          SPRING_DATASOURCE_PASSWORD: "komga_password"
 
       - name: Upload Unit Test Results
         if: always()
