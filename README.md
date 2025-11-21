@@ -1,17 +1,10 @@
-[![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/komga?label=OpenCollective%20Sponsors&color=success)](https://opencollective.com/komga) [![GitHub Sponsors](https://img.shields.io/github/sponsors/gotson?label=Github%20Sponsors&color=success)](https://github.com/sponsors/gotson)
-[![Discord](https://img.shields.io/discord/678794935368941569?label=Discord&color=blue)](https://discord.gg/TdRpkDu)
+# ![app icon](./.github/readme-images/app-icon.png) Komga PostgreSQL Fork
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/gotson/komga/tests.yml?branch=master)](https://github.com/gotson/komga/actions?query=workflow%3ATests+branch%3Amaster)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/gotson/komga?color=blue&label=download&sort=semver)](https://github.com/gotson/komga/releases) [![GitHub all releases](https://img.shields.io/github/downloads/gotson/komga/total?color=blue&label=github%20downloads)](https://github.com/gotson/komga/releases)
-[![Docker Pulls](https://img.shields.io/docker/pulls/gotson/komga)](https://hub.docker.com/r/gotson/komga)
-
-[![Translation status](https://hosted.weblate.org/widgets/komga/-/webui/svg-badge.svg)](https://hosted.weblate.org/engage/komga/)
-
-# ![app icon](./.github/readme-images/app-icon.png) Komga
+> **⚠️ FORK NOTICE**: This is a fork of the original Komga project, modified to use **PostgreSQL** instead of SQLite for improved performance and scalability. This fork is **not extensively tested** and may contain bugs or lead to unexpected issues. Use at your own risk. For the official stable version, please visit the [original Komga repository](https://github.com/gotson/komga).
+>
+> **If you encounter any issues with this fork, please open an issue in [this repository](https://github.com/jindalpratik/komga/issues) and NOT in the original Komga repository.**
 
 Komga is a media server for your comics, mangas, BDs, magazines and eBooks.
-
-#### Chat on [Discord](https://discord.gg/TdRpkDu)
 
 ## Features
 
@@ -33,29 +26,29 @@ Komga is a media server for your comics, mangas, BDs, magazines and eBooks.
 
 ## Installation
 
-Refer to the [website](https://komga.org/docs/category/installation) for instructions.
+### Using This PostgreSQL Fork
+
+To use this PostgreSQL fork, follow these steps:
+
+1. **Build the Docker image:**
+   ```bash
+   docker build -t komga:postgresql-v2 -f Dockerfile .
+   ```
+
+2. **Run with Docker Compose:**
+   ```bash
+   docker-compose up -d
+   ```
+
+   Make sure you have a `docker-compose.yml` file configured with PostgreSQL settings.
 
 ## Documentation
 
-Head over to our [website](https://komga.org) for more information.
+For general documentation about Komga features, refer to the [official Komga website](https://komga.org).
 
 ## Develop in Komga
 
 Check the [development guidelines](./DEVELOPING.md).
-
-## Translation
-
-[![Translation status](https://hosted.weblate.org/widgets/komga/-/webui/horizontal-auto.svg)](https://hosted.weblate.org/engage/komga/)
-
-## Sponsors
-
-[![Jetbrains_logo](./.github/readme-images/jetbrains.svg)](https://www.jetbrains.com/?from=Komga)
-
-Thanks to [JetBrains](https://www.jetbrains.com/?from=Komga) for providing the development environment that helps us develop Komga.
-
-[![Chromatic logo](https://user-images.githubusercontent.com/321738/84662277-e3db4f80-af1b-11ea-88f5-91d67a5e59f6.png)](https://www.chromatic.com)
-
-Thanks to [Chromatic](https://www.chromatic.com/) for providing the visual testing platform that helps us review UI changes and catch visual regressions.
 
 ## Credits
 

@@ -169,7 +169,7 @@ class SyncPointDao(
         ).execute()
     }
   }
-  
+
   override fun findByIdOrNull(syncPointId: String): SyncPoint? = dsl.findByIdOrNull(syncPointId)
 
   private fun DSLContext.findByIdOrNull(syncPointId: String): SyncPoint? =
