@@ -4,20 +4,6 @@ FROM eclipse-temurin:21-jdk AS app-builder
 
 WORKDIR /app
 
-# Copy gradle wrapper and build files
-COPY gradlew gradlew.bat ./
-COPY gradle/ gradle/
-COPY settings.gradle build.gradle.kts ./
-COPY gradle.properties conventionalcommit.json ./
-
-# Copy .git directory for git properties generation
-COPY .git/ .git/
-
-# Copy all source code
-COPY komga/ komga/
-COPY komga-tray/ komga-tray/
-COPY komga-webui/ komga-webui/
-
 # Install Node.js and PostgreSQL for frontend build and JOOQ schema generation
 RUN apt-get update && \
     apt-get install -y curl dos2unix postgresql postgresql-contrib sudo git && \
@@ -31,6 +17,20 @@ RUN service postgresql start && \
     sudo -u postgres createdb -O komga komga_tasks && \
     sudo -u postgres psql -d komga -c "CREATE EXTENSION IF NOT EXISTS unaccent;" && \
     sudo -u postgres psql -d komga_tasks -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+
+# Copy gradle wrapper and build files
+COPY gradlew gradlew.bat ./
+COPY gradle/ gradle/
+COPY settings.gradle build.gradle.kts ./
+COPY gradle.properties conventionalcommit.json ./
+
+# Copy .git directory for git properties generation
+COPY .git/ .git/
+
+# Copy all source code
+COPY komga-webui/ komga-webui/
+COPY komga-tray/ komga-tray/
+COPY komga/ komga/
 
 # Build the application (following release.yml build commands)
 # JOOQ needs PostgreSQL to generate correct schema
