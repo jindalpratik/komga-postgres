@@ -126,7 +126,7 @@ class SyncPointDao(
           .where(condition),
       ).execute()
 
-    return findByIdOrNull(syncPointId)!!
+    return dsl.findByIdOrNull(syncPointId)!!
   }
 
   @Transactional
@@ -169,10 +169,11 @@ class SyncPointDao(
         ).execute()
     }
   }
+  
+  override fun findByIdOrNull(syncPointId: String): SyncPoint? = dsl.findByIdOrNull(syncPointId)
 
-  override fun findByIdOrNull(syncPointId: String): SyncPoint? =
-    dsl
-      .selectFrom(sp)
+  private fun DSLContext.findByIdOrNull(syncPointId: String): SyncPoint? =
+    selectFrom(sp)
       .where(sp.ID.eq(syncPointId))
       .fetchInto(sp)
       .map {
