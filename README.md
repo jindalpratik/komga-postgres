@@ -1,6 +1,12 @@
 # ![app icon](./.github/readme-images/app-icon.png) Komga PostgreSQL Fork
 
-> **⚠️ FORK NOTICE**: This is a fork of the original Komga project, modified to use **PostgreSQL** instead of SQLite for improved performance and scalability. This fork is **not extensively tested** and may contain bugs or lead to unexpected issues. Use at your own risk. For the official stable version, please visit the [original Komga repository](https://github.com/gotson/komga).
+> **⚠️ FORK NOTICE**: This is a fork of the original Komga project, modified to use **PostgreSQL 16** instead of SQLite for improved performance and scalability. This fork is **not extensively tested** and may contain bugs or lead to unexpected issues. Use at your own risk. For the official stable version, please visit the [original Komga repository](https://github.com/gotson/komga).
+>
+> **⚠️ DATABASE COMPATIBILITY**: 
+> - This fork **requires PostgreSQL 16** and will NOT work with SQLite or other database versions
+> - You **CANNOT migrate** from the original Komga's SQLite database to this PostgreSQL fork
+> - You must **start from scratch** - this means re-adding your libraries and reconfiguring all settings
+> - All your previous data (reading progress, collections, metadata) will be lost during migration
 >
 > **If you encounter any issues with this fork, please open an issue in [this repository](https://github.com/jindalpratik/komga/issues) and NOT in the original Komga repository.**
 
