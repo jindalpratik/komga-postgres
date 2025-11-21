@@ -14,7 +14,6 @@
         <template v-slot:activator="{ on, attrs }">
           <v-icon
             class="v-btn--icon v-size--default px-2"
-            :color="fileTooBig ? 'error' : ''"
             v-bind="attrs"
             v-on="on">
             {{ statusIcon }}
@@ -23,7 +22,7 @@
         <span>{{ statusTooltip }}</span>
       </v-tooltip>
 
-      <v-tooltip v-if="!fileTooBig" top>
+      <v-tooltip top>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             icon
@@ -109,20 +108,9 @@ export default Vue.extend({
     mediaType(): string | undefined {
       return this.$_.get(this.item, 'mediaType', undefined)
     },
-    fileTooBig(): boolean {
-      if (this.item instanceof File) {
-        return this.item.size > 1_000_000
-      } else {
-        return false
-      }
-    },
     statusIcon(): string {
       if (this.item instanceof File) {
-        if (this.fileTooBig) {
-          return 'mdi-alert-circle'
-        } else {
-          return 'mdi-cloud-upload-outline'
-        }
+        return 'mdi-cloud-upload-outline'
       } else {
         if (this.item.type === 'SIDECAR') {
           return 'mdi-folder-outline'
@@ -135,11 +123,7 @@ export default Vue.extend({
     },
     statusTooltip(): string {
       if (this.item instanceof File) {
-        if (this.fileTooBig) {
-          return this.$t('thumbnail_card.tooltip_too_big').toString()
-        } else {
-          return this.$t('thumbnail_card.tooltip_to_be_uploaded').toString()
-        }
+        return this.$t('thumbnail_card.tooltip_to_be_uploaded').toString()
       } else {
         if (this.item.type === 'SIDECAR') {
           return this.$t('thumbnail_card.tooltip_sidecar').toString()

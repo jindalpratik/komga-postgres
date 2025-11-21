@@ -94,6 +94,8 @@ COPY --from=builder /builder/extracted/snapshot-dependencies/ ./
 COPY --from=builder /builder/extracted/application/ ./
 ENV KOMGA_CONFIGDIR="/config"
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+ENV SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE=500MB
+ENV SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE=500MB
 ENTRYPOINT ["java", "-Dspring.profiles.include=docker", "--enable-native-access=ALL-UNNAMED", "-jar", "application.jar", "--spring.config.additional-location=file:/config/"]
 EXPOSE 25600
 
