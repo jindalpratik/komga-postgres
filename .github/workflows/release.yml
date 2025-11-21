@@ -42,12 +42,12 @@ jobs:
           java-package: 'jdk'
           distribution: 'temurin'
 
-      - name: Setup PostgreSQL 16
+      - name: Setup PostgreSQL 18
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-common
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
-          sudo apt-get install -y postgresql-16 postgresql-contrib-16
+          sudo apt-get install -y postgresql-18 postgresql-contrib-18
           sudo systemctl start postgresql
           sudo -u postgres psql -c "CREATE USER komga WITH PASSWORD 'komga_password' SUPERUSER;"
           sudo -u postgres createdb -O komga komga
@@ -72,10 +72,10 @@ jobs:
           cat > release_notes/release_notes.md << 'EOF'
           ## ⚠️ PostgreSQL Fork Notice
           
-          This release is built for **PostgreSQL 16** and may not work with other postgres versions.
+          This release is built for **PostgreSQL 18** and may not work with other postgres versions.
           
           **Important:**
-          - Requires PostgreSQL 16 (will NOT work with SQLite or other database versions)
+          - Requires PostgreSQL 18 (will NOT work with SQLite or other database versions)
           - Cannot migrate from original Komga - you must start from scratch
           - All previous data (reading progress, collections, metadata) will be lost
           

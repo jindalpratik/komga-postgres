@@ -105,8 +105,8 @@ dependencies {
 
   implementation("com.github.ben-manes.caffeine:caffeine")
 
-  implementation("org.postgresql:postgresql:42.7.4")
-  jooqGenerator("org.postgresql:postgresql:42.7.4")
+  implementation("org.postgresql:postgresql:42.7.8")
+  jooqGenerator("org.postgresql:postgresql:42.7.8")
 
   if (version.toString().endsWith(".0.0")) {
     ksp("com.github.gotson.bestbefore:bestbefore-processor-kotlin:0.2.0")

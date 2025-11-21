@@ -6,9 +6,13 @@ WORKDIR /app
 
 # Install Node.js and PostgreSQL for frontend build and JOOQ schema generation
 RUN apt-get update && \
-    apt-get install -y curl dos2unix postgresql postgresql-contrib sudo git && \
+    apt-get install -y curl dos2unix sudo git gnupg lsb-release && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
+    apt-get install -y nodejs && \
+    sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' && \
+    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg && \
+    apt-get update && \
+    apt-get install -y postgresql-18 postgresql-contrib-18
 
 # Setup PostgreSQL for JOOQ schema generation
 RUN service postgresql start && \
