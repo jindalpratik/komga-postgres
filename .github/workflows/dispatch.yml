@@ -1,18 +1,11 @@
-name: Dispatch events
+name: Dispatch events (disabled for fork)
 
 on:
-  push:
-    branches: [ master ]
-    paths:
-      - '**/openapi.json'
+  workflow_dispatch:
 
 jobs:
-  dispatch:
+  disabled:
+    name: This workflow is disabled for this fork
     runs-on: ubuntu-latest
     steps:
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          repository: gotson/komga-website
-          event-type: openapi
+    - run: echo "This workflow is disabled for this fork"
