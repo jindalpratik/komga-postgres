@@ -69,6 +69,21 @@ jobs:
       - name: Create release notes
         run: |
           mkdir -p release_notes
+          cat > release_notes/release_notes.md << 'EOF'
+          ## ⚠️ PostgreSQL Fork Notice
+          
+          This release is built for **PostgreSQL 16** and may not work with other postgres versions.
+          
+          **Important:**
+          - Requires PostgreSQL 16 (will NOT work with SQLite or other database versions)
+          - Cannot migrate from original Komga - you must start from scratch
+          - All previous data (reading progress, collections, metadata) will be lost
+          
+          For complete list of changes, see [CHANGELOG.md](https://github.com/jindalpratik/komga/blob/feature/postgresv2/CHANGELOG.md)
+          
+          ---
+          
+          EOF
           echo -e "${{ inputs.release_notes }}" >> release_notes/release_notes.md
           echo "Release notes:"
           cat release_notes/release_notes.md
