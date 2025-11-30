@@ -181,9 +181,20 @@ tasks {
     )
   }
 
-  register<Exec>("npmBuild") {
+  register<Exec>("fixNodeModulesPermissions") {
     group = "web"
     dependsOn("npmInstall")
+    workingDir(webui)
+    // Only run on non-Windows systems where permissions matter
+    onlyIf { !Os.isFamily(Os.FAMILY_WINDOWS) }
+    commandLine("chmod", "-R", "+x", "node_modules/.bin/")
+    // Ignore errors in case node_modules/.bin doesn't exist yet
+    isIgnoreExitValue = true
+  }
+
+  register<Exec>("npmBuild") {
+    group = "web"
+    dependsOn("npmInstall", "fixNodeModulesPermissions")
     workingDir(webui)
     inputs.dir(webui)
     outputs.dir("$webui/dist")
