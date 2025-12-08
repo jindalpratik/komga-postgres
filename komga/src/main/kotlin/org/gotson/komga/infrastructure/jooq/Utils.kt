@@ -77,10 +77,14 @@ fun DSLContext.insertTempStrings(
   this.execute("TRUNCATE TABLE temp_string_list")
 
   if (collection.isNotEmpty()) {
+    // Define the table and column manually since it's a dynamic temporary table
+    val tempTable = DSL.table(DSL.name("temp_string_list"))
+    val stringColumn = DSL.field(DSL.name("string"), String::class.java)
+
     collection.chunked(batchSize).forEach { chunk ->
       this
         .batch(
-          this.insertInto(Tables.TEMP_STRING_LIST, Tables.TEMP_STRING_LIST.STRING).values(null as String?),
+          this.insertInto(tempTable, stringColumn).values(null as String?),
         ).also { step ->
           chunk.forEach {
             step.bind(it)
@@ -90,7 +94,12 @@ fun DSLContext.insertTempStrings(
   }
 }
 
-fun DSLContext.selectTempStrings() = this.select(Tables.TEMP_STRING_LIST.STRING).from(Tables.TEMP_STRING_LIST)
+fun DSLContext.selectTempStrings(): org.jooq.Select<org.jooq.Record1<String>> {
+  // Define the table and column manually since it's a dynamic temporary table
+  val tempTable = DSL.table(DSL.name("temp_string_list"))
+  val stringColumn = DSL.field(DSL.name("string"), String::class.java)
+  return this.select(stringColumn).from(tempTable)
+}
 
 fun ContentRestrictions.toCondition(): Condition {
   val ageAllowed =
