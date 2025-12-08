@@ -48,11 +48,34 @@ fun Field<String>.inOrNoCondition(list: Collection<String>?): Condition =
  */
 fun Field<String>.udfStripAccents() = DSL.function("unaccent", String::class.java, this)
 
+/**
+ * Ensures the session-specific temporary table exists.
+ * PostgreSQL temporary tables are automatically session-specific and isolated,
+ * preventing concurrency issues and deadlocks.
+ */
+private fun DSLContext.ensureTempStringListExists() {
+  // Create temporary table if it doesn't exist in this session
+  // ON COMMIT DELETE ROWS ensures data is cleared after each transaction
+  // TEMPORARY makes it session-specific, preventing concurrency issues
+  this.execute(
+    """
+    CREATE TEMPORARY TABLE IF NOT EXISTS temp_string_list (
+      string TEXT NOT NULL
+    ) ON COMMIT DELETE ROWS
+    """.trimIndent()
+  )
+}
+
 fun DSLContext.insertTempStrings(
   batchSize: Int,
   collection: Collection<String>,
 ) {
-  this.deleteFrom(Tables.TEMP_STRING_LIST).execute()
+  // Ensure the temporary table exists for this session
+  ensureTempStringListExists()
+
+  // Clear any existing data (though ON COMMIT DELETE ROWS should handle this)
+  this.execute("TRUNCATE TABLE temp_string_list")
+
   if (collection.isNotEmpty()) {
     collection.chunked(batchSize).forEach { chunk ->
       this
